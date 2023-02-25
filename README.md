@@ -1,4 +1,4 @@
-# springboot-vur-demo
+# springboot-vue-demo
 
 ## Project setup
 ```
