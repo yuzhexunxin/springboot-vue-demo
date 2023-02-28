@@ -94,7 +94,7 @@
             <el-input type="textarea" v-model="form.exhText" style="width: 80%"/>
           </el-form-item>
           <el-form-item label="展品图片">
-            <el-upload ref="upload" action="http://localhost:9090/files/upload" :on-success="filesUploadSuccess"
+            <el-upload ref="upload" :action="filesUploadUrl" :on-success="filesUploadSuccess"
             >
               <el-button type="primary">点击上传</el-button>
             </el-upload>
@@ -131,6 +131,7 @@ export default {
       total: 0,
       tableData: [],
       keyWord: 'exhName',
+      filesUploadUrl: "http://" + window.server.filesUploadUrl + ":9090/files/upload"
     }
   },
   computed: {
@@ -148,6 +149,7 @@ export default {
     filesUploadSuccess(res){
       console.log(res)
       this.form.exhImg = res.data
+
     },
     load(){
       request.get("/exh",{
@@ -166,7 +168,9 @@ export default {
     add() {
       this.dialogVisible = true
       this.form = {}
-      this.$refs['upload'].clearFiles() //清楚历史文件列表
+      this.$nextTick(() => {
+        this.$refs['upload'].clearFiles() //清楚历史文件列表
+      })
     },
     save() {
       if(this.form.exhId){//更新

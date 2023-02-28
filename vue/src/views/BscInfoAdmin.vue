@@ -115,7 +115,7 @@ export default {
       tableData: [],
       keyWord: 'title',
       detail: {},
-      vis: false
+      vis: false,
     }
   },
   computed: {
@@ -157,7 +157,8 @@ export default {
       this.form = {}
       this.$nextTick(() => {
         editor = new E("#div1")
-        editor.config.uploadImgServer = '/api/files/editor/upload'
+        // editor.config.uploadImgServer = '/api/files/editor/upload'
+        editor.config.uploadImgServer = 'http://' + window.server.filesUploadUrl + ':9090/files/editor/upload'
         editor.config.uploadFileName = "file"
         editor.create()
       })

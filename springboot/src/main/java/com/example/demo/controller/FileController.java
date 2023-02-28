@@ -23,10 +23,14 @@ import java.util.List;
 @RequestMapping("/files")
 public class FileController {
     @Value("${server.port}")
-//
     private String port;
+    @Value("${file.ip}")
+    private String ip;
 //
-    private static final String ip = "http://localhost";
+
+//
+//    private static final String ip = "http://localhost";
+    @CrossOrigin
     @PostMapping("/editor/upload") //文本编辑器上传接口
     public JSON editorUpload(MultipartFile file) throws IOException {
         String originalFilename = file.getOriginalFilename(); //获取文件名称
@@ -34,7 +38,7 @@ public class FileController {
         String flag = IdUtil.fastSimpleUUID();
         String rootFilePath = System.getProperty("user.dir") + "/springboot/src/main/resources/files/" + flag + "_" + originalFilename;//获取上传的路径
         FileUtil.writeBytes(file.getBytes(),rootFilePath); //把文件写入路径
-        String url = ip + ":" + port + "/files/" + flag;
+        String url = "http://" + ip + ":" + port + "/files/" + flag;
         JSONObject json = new JSONObject();
         json.set("errno",0);
         JSONArray arr = new JSONArray();
@@ -46,6 +50,7 @@ public class FileController {
         return json; //返回结果url
 
     }
+    @CrossOrigin
     @PostMapping("/upload") //上传接口
     public Result<?> upload(MultipartFile file) throws IOException {
         String originalFilename = file.getOriginalFilename(); //获取文件名称
@@ -53,9 +58,10 @@ public class FileController {
         String flag = IdUtil.fastSimpleUUID();
         String rootFilePath = System.getProperty("user.dir") + "/springboot/src/main/resources/files/" + flag + "_" + originalFilename;//获取上传的路径
         FileUtil.writeBytes(file.getBytes(),rootFilePath); //把文件写入路径
-        return Result.success(ip + ":" + port + "/files/" + flag); //返回结果url
+        return Result.success("http://" + ip + ":" + port + "/files/" + flag); //返回结果url
 
     }
+    @CrossOrigin
     @GetMapping("/{flag}") // 下载接口
     public void getFiles(@PathVariable String flag, HttpServletResponse response) {
         OutputStream os; //新建一个输出流对象

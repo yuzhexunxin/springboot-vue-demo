@@ -36,6 +36,12 @@
       <el-table-column prop="age" label="年龄" align="center" />
       <el-table-column prop="sex" label="性别" align="center" />
       <el-table-column prop="address" label="地址" align="center" />
+      <el-table-column label="角色" align="center">
+        <template #default="scope">
+          <span v-if="scope.row.role === 1">管理员</span>
+          <span v-if="scope.row.role === 2">普通用户</span>
+        </template>
+      </el-table-column>
       <el-table-column fixed="right" label="操作" align="center" width="150px" >
 <!--        删除确认提示框-->
         <template #default="scope">
@@ -197,7 +203,7 @@ export default {
     },
     handleDelete(id){
       request.delete("/user/" + id).then(res =>{
-        if(res.code ==- "0") {
+        if(res.code === "0") {
           this.$message({
             type:"success",
             message:"删除成功"
