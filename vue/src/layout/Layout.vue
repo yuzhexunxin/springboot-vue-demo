@@ -5,11 +5,14 @@
             top: 0px;
             width: 100%;"/>
     <!--    左侧边栏-->
-    <div style="display: flex;margin-top: 50px;">
+    <div style="margin-top: 50px;">
       <Aside style="position: fixed;/*固定*/
       left: 0px;"/>
       <!--    主体-->
-      <router-view style="margin-left: 200px"/>
+      <div style="margin-left: 200px">
+        <router-view />
+      </div>
+
     </div>
   </div>
 </template>

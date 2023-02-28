@@ -19,11 +19,14 @@
         <el-icon><User /></el-icon>
         <span>用户管理</span>
       </el-menu-item>
-      <el-menu-item index="/cmntAdmin" v-if="user.role === 1">
+      <el-menu-item index="/cmntAdmin" >
         <el-icon><document /></el-icon>
         <span>评论管理</span>
       </el-menu-item>
-
+      <el-menu-item index="/self" >
+        <el-icon><User /></el-icon>
+        <span>个人信息</span>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>

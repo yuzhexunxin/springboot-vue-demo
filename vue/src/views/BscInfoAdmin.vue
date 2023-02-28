@@ -86,11 +86,12 @@
         </template>
       </el-dialog>
       <!--      详情弹窗-->
-      <el-dialog v-model="vis" title="详情" width="50%">
+      <el-dialog v-model="vis" :title="detail.title" width="50%">
         <el-card>
           <div v-html="detail.content" style="min-height: 100px"></div>
         </el-card>
       </el-dialog>
+
     </div>
   </div>
 
