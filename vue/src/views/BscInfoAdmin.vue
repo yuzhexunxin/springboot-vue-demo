@@ -34,6 +34,18 @@
       <el-table-column prop="title" label="标题" align="center" />
       <el-table-column prop="author" label="作者" align="center" />
       <el-table-column prop="time" label="发布时间" align="center" />
+      <el-table-column label="新闻封面" style="background-color: aqua;" align="center" >
+        <template #default="scope">
+          <el-image
+              style="width: 100px; height: 100px"
+              :src="scope.row.headimg"
+              :preview-src-list="[scope.row.headimg]"
+              preview-teleported="true"
+              fit="cover"
+
+          />
+        </template>
+      </el-table-column>
       <el-table-column fixed="right" label="操作" align="center" width="200px">
         <!--        删除确认提示框-->
         <template #default="scope">
@@ -70,29 +82,36 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
       />
-      <!--      弹窗-->
-      <el-dialog v-model="dialogVisible" title="信息" width="50%">
-        <el-form :model="form" label-width="120px">
-          <el-form-item label="标题">
-            <el-input v-model="form.title" style="width: 50%"/>
-          </el-form-item>
-          <div id="div1"></div>
-        </el-form>
-        <template #footer>
+    </div>
+    <!--      弹窗-->
+    <el-dialog v-model="dialogVisible" title="信息" width="50%" >
+      <el-form :model="form" label-width="120px">
+        <el-form-item label="标题">
+          <el-input v-model="form.title" style="width: 50%"/>
+        </el-form-item>
+        <el-form-item label="新闻封面">
+          <el-upload ref="upload" :action="filesUploadUrl" :on-success="filesUploadSuccess"
+          >
+            <el-button type="primary">点击上传</el-button>
+          </el-upload>
+        </el-form-item>
+        <div id="div1"></div>
+      </el-form>
+      <template #footer>
           <span class="dialog-footer">
             <el-button @click="dialogVisible = false">取 消</el-button>
             <el-button type="primary" @click="save">确 定</el-button>
           </span>
-        </template>
-      </el-dialog>
-      <!--      详情弹窗-->
-      <el-dialog v-model="vis" :title="detail.title" width="50%">
-        <el-card>
-          <div v-html="detail.content" style="min-height: 100px"></div>
-        </el-card>
-      </el-dialog>
-
-    </div>
+      </template>
+    </el-dialog>
+    <!--      详情弹窗-->
+    <el-dialog v-model="vis" :title="detail.title" width="50%">
+      <div style="margin-top: -20px;">作者：{{ detail.author }}</div>
+      <div style="margin-top: 10px;margin-bottom: 20px;">发布时间：{{ detail.time }}</div>
+      <el-card>
+        <div v-html="detail.content" style="min-height: 100px"></div>
+      </el-card>
+    </el-dialog>
   </div>
 
 </template>
@@ -117,6 +136,7 @@ export default {
       keyWord: 'title',
       detail: {},
       vis: false,
+      filesUploadUrl: "http://" + window.server.filesUploadUrl + ":9090/files/upload"
     }
   },
   computed: {
@@ -132,6 +152,11 @@ export default {
 
   },
   methods: {
+    filesUploadSuccess(res){
+      console.log(res)
+      this.form.headimg = res.data
+
+    },
     details(row) {
       this.detail = row
       this.vis = true
@@ -162,6 +187,7 @@ export default {
         editor.config.uploadImgServer = 'http://' + window.server.filesUploadUrl + ':9090/files/editor/upload'
         editor.config.uploadFileName = "file"
         editor.create()
+        this.$refs['upload'].clearFiles() //清楚历史文件列表
       })
     },
     save() {
@@ -206,7 +232,6 @@ export default {
       }
     },
     handleEdit(row) {
-
       this.form = JSON.parse(JSON.stringify(row))
       this.dialogVisible = true
       if(editor) {
@@ -218,11 +243,12 @@ export default {
         editor.config.uploadFileName = "file"
         editor.create()
         editor.txt.html(row.content)
+        this.$refs['upload'].clearFiles() //清楚历史文件列表
       })
     },
     handleDelete(id){
       request.delete("/news/" + id).then(res =>{
-        if(res.code ==- "0") {
+        if(res.code === "0") {
           this.$message({
             type:"success",
             message:"删除成功"

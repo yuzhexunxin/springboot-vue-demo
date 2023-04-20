@@ -24,9 +24,19 @@ const routes = [
         component: () => import('../views/ExhAdmin.vue')
       },
       {
+        path: '/zlAdmin',
+        name: 'ZlAdmin',
+        component: () => import('../views/ZlAdmin.vue')
+      },
+      {
         path: '/cmntAdmin',
         name: 'CmntAdmin',
         component: () => import('../views/CmntAdmin.vue')
+      },
+      {
+        path: '/orderAdmin',
+        name: 'OrderAdmin',
+        component: () => import('../views/OrderAdmin.vue')
       },
       {
         path: '/self',
@@ -51,10 +61,24 @@ const routes = [
     component: () => import('../views/Test.vue')
   }
 ]
-
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
 })
+// 检查是否登录
+router.beforeEach((to,from,next) =>{
+  // 获取缓存
+  let userJson = sessionStorage.getItem("user")
+  if(to.path === '/login' || to.path === '/register') {
+    next()
+  }else {
+    if(!userJson){
+      router.push('/login')
+    }else {
+      next()
+    }
+  }
+})
+
 
 export default router

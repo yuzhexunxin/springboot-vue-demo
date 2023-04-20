@@ -44,9 +44,10 @@
           />
         </template>
       </el-table-column>
-      <el-table-column fixed="right" label="操作" align="center" width="150px" >
+      <el-table-column fixed="right" label="操作" align="center" width="200" >
         <!--        删除确认提示框-->
         <template #default="scope">
+          <el-button type="primary" @click="details(scope.row)" >详情</el-button>
           <el-button type="primary" @click="handleEdit(scope.row)" >编辑</el-button>
           <el-popconfirm
               width="220"
@@ -79,7 +80,7 @@
           @current-change="handleCurrentChange"
       />
       <!--      弹窗-->
-      <el-dialog v-model="dialogVisible" title="信息" width="30%">
+      <el-dialog v-model="dialogVisible" title="信息" width="50%" style="margin-top: 10vh">
         <el-form :model="form" label-width="120px">
           <el-form-item label="展品名">
             <el-input v-model="form.exhName" style="width: 80%"/>
@@ -90,16 +91,13 @@
           <el-form-item label="展品年份">
             <el-input v-model="form.exhAge" style="width: 80%"/>
           </el-form-item>
-          <el-form-item label="展品介绍">
-            <el-input type="textarea" v-model="form.exhText" style="width: 80%"/>
-          </el-form-item>
           <el-form-item label="展品图片">
             <el-upload ref="upload" :action="filesUploadUrl" :on-success="filesUploadSuccess"
             >
               <el-button type="primary">点击上传</el-button>
             </el-upload>
           </el-form-item>
-
+          <div id="div1"></div>
         </el-form>
         <template #footer>
           <span class="dialog-footer">
@@ -107,6 +105,14 @@
             <el-button type="primary" @click="save">确 定</el-button>
           </span>
         </template>
+      </el-dialog>
+      <!--      详情弹窗-->
+      <el-dialog v-model="vis" :title="detail.exhName" width="50%">
+        <div style="margin-top: -20px;">展品年份：{{ detail.exhAge }}</div>
+        <div style="margin-top: 10px;margin-bottom: 20px;">展品类型：{{ detail.exhType }}</div>
+        <el-card>
+          <div v-html="detail.exhText" style="min-height: 100px"></div>
+        </el-card>
       </el-dialog>
     </div>
   </div>
@@ -118,7 +124,8 @@
 // @ is an alias to /src
 import {Search ,InfoFilled} from "@element-plus/icons";
 import request from "@/utils/request";
-
+import E from "wangeditor"
+let editor
 export default {
   name: 'ExhAdmin',
   data() {
@@ -131,6 +138,8 @@ export default {
       total: 0,
       tableData: [],
       keyWord: 'exhName',
+      detail: {},
+      vis: false,
       filesUploadUrl: "http://" + window.server.filesUploadUrl + ":9090/files/upload"
     }
   },
@@ -149,7 +158,10 @@ export default {
     filesUploadSuccess(res){
       console.log(res)
       this.form.exhImg = res.data
-
+    },
+    details(row) {
+      this.detail = row
+      this.vis = true
     },
     load(){
       request.get("/exh",{
@@ -166,13 +178,22 @@ export default {
       })
     },
     add() {
+      if(editor) {
+        editor.destroy()
+      }
       this.dialogVisible = true
       this.form = {}
       this.$nextTick(() => {
+        editor = new E("#div1")
+        // editor.config.uploadImgServer = '/api/files/editor/upload'
+        editor.config.uploadImgServer = 'http://' + window.server.filesUploadUrl + ':9090/files/editor/upload'
+        editor.config.uploadFileName = "file"
+        editor.create()
         this.$refs['upload'].clearFiles() //清楚历史文件列表
       })
     },
     save() {
+      this.form.exhText = editor.txt.html() //获取编辑器值，放入对象属性
       if(this.form.exhId){//更新
         request.put("/exh",this.form).then(res => {
           console.log(res)
@@ -212,13 +233,22 @@ export default {
     handleEdit(row) {
       this.form = JSON.parse(JSON.stringify(row))
       this.dialogVisible = true
+      if(editor) {
+        editor.destroy()
+      }
       this.$nextTick(() => {
+        editor = new E("#div1")
+        editor.config.uploadImgServer = '/api/files/editor/upload'
+        editor.config.uploadFileName = "file"
+        editor.create()
+        editor.txt.html(row.exhText)
+        console.log(row.exhText)
         this.$refs['upload'].clearFiles() //清楚历史文件列表
       })
     },
     handleDelete(id){
       request.delete("/exh/" + id).then(res =>{
-        if(res.code ==- "0") {
+        if(res.code === "0") {
           this.$message({
             type:"success",
             message:"删除成功"

@@ -38,17 +38,27 @@ public class CmntController {
                               @RequestParam(defaultValue = "") String keyWord,
                               @RequestParam(defaultValue = "") String search) {
         LambdaQueryWrapper<Cmnt> wrapper = Wrappers.<Cmnt>lambdaQuery();
-        if(keyWord.equals("cmntText")) {
+        if(keyWord.equals("text")) {
             if(StrUtil.isNotBlank(search)) {
-                wrapper.like(Cmnt::getCmntText, search);
+                wrapper.like(Cmnt::getText, search);
             }
-        }else if(keyWord.equals("cmntUserid")) {
+        }else if(keyWord.equals("userid")) {
             if(StrUtil.isNotBlank(search)) {
-                wrapper.like(Cmnt::getCmntUserid, search);
+                wrapper.like(Cmnt::getUserid, search);
             }
-        }else if(keyWord.equals("cmntExhid")) {
+        }else if(keyWord.equals("exhid")) {
             if(StrUtil.isNotBlank(search)) {
-                wrapper.like(Cmnt::getCmntExhid, search);
+                wrapper.like(Cmnt::getExhid, search);
+            }
+        }
+        else if(keyWord.equals("zlid")) {
+            if(StrUtil.isNotBlank(search)) {
+                wrapper.like(Cmnt::getZlid, search);
+            }
+        }
+        else if(keyWord.equals("newid")) {
+            if(StrUtil.isNotBlank(search)) {
+                wrapper.like(Cmnt::getNewid, search);
             }
         }
         Page<Cmnt> cmntPage = cmntMapper.selectPage(new Page<>(pageNum,pageSize), wrapper);

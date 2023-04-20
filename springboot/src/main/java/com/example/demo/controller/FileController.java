@@ -46,7 +46,6 @@ public class FileController {
         arr.add(data);
         data.set("url",url);
         json.set("data",arr);
-
         return json; //返回结果url
 
     }
@@ -59,7 +58,6 @@ public class FileController {
         String rootFilePath = System.getProperty("user.dir") + "/springboot/src/main/resources/files/" + flag + "_" + originalFilename;//获取上传的路径
         FileUtil.writeBytes(file.getBytes(),rootFilePath); //把文件写入路径
         return Result.success("http://" + ip + ":" + port + "/files/" + flag); //返回结果url
-
     }
     @CrossOrigin
     @GetMapping("/{flag}") // 下载接口

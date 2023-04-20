@@ -1,6 +1,11 @@
 <template>
-  <div style="width: calc(100vw - 200px);height: 200px; padding: 30px; display: flex">
-      <img class="selfImg" src="/favicon.ico"/>
+
+  <div style="width: calc(100vw - 200px);height: 200px; padding: 30px; display: flex" >
+    <div style="width: 200px;height: 200px;">
+      <el-upload on-exceed="x" ref="upload" :show-file-list="false" :action="filesUploadUrl" :on-success="filesUploadSuccess">
+        <img class="selfImg" :src="form.headimg?form.headimg:require('../assets/img/头像.jpg')"/>
+      </el-upload>
+    </div>
       <el-descriptions class="selfCard" title="个人信息" size="large" border="true">
         <el-descriptions-item label="用户名" width="100px"  style="background-color: red">
           <span v-if="inShow" @dblclick="edit" onselectstart="return false">
@@ -54,19 +59,29 @@
           </span>
           <el-input v-if="!inShow" v-model="form.password"  style="margin: 0 auto; width: 150px;"/>
         </el-descriptions-item>
-        <el-descriptions-item label="密码" width="100px">
+        <el-descriptions-item label="手机号" width="100px">
           <span v-if="inShow" @dblclick="edit" onselectstart="return false">
             <el-tooltip content="双击修改" placement="top-start">
-              {{ form.password }}
+              {{ form.phone }}
             </el-tooltip>
           </span>
-          <el-input v-if="!inShow" v-model="form.password"  style="margin: 0 auto; width: 150px;" />
+          <el-input v-if="!inShow" v-model="form.phone"  style="margin: 0 auto; width: 150px;" />
+        </el-descriptions-item>
+        <el-descriptions-item label="邮箱" width="100px">
+          <span v-if="inShow" @dblclick="edit" onselectstart="return false">
+            <el-tooltip content="双击修改" placement="top-start">
+              {{ form.email }}
+            </el-tooltip>
+          </span>
+          <el-input v-if="!inShow" v-model="form.email"  style="margin: 0 auto; width: 150px;" />
         </el-descriptions-item>
       </el-descriptions>
   </div>
-  <div style="margin-top: 30px;float:right; margin-right: 30px">
+  <div v-if="!inShow" style="margin-top: 30px;float:right; margin-right: 30px">
     <el-button type="primary" @click="update" >保存</el-button>
   </div>
+
+<!--  -->
 
 
 </template>
@@ -83,38 +98,40 @@ export default {
       form: {},
       inShow: true,
       inValue: '',
+      filesUploadUrl: "http://" + window.server.filesUploadUrl + ":9090/files/upload"
     }
   },
   created() {
     let str = sessionStorage.getItem("user") || "{}"
     this.form = JSON.parse(str)
-    console.log(this.form)
   },
   methods: {
+    x(){
+      console.log("文件太大")
+    },
+    filesUploadSuccess(res){
+      this.form.headimg = res.data
+      this.update()
+    },
     edit() {
-      this.inShow =!this.inShow
+      this.inShow = false
     },
     update(){
-      if(!this.inShow){
-        this.inShow = !this.inShow
-        request.put("/user",this.form).then(res => {
-          console.log(res)
-          if (res.code === "0") {
-            this.$message({
-              type: "success",
-              message: "更新成功"
-            })
-            sessionStorage.setItem("user",JSON.stringify(this.form))
-          } else {
-            this.$message({
-              type: "error",
-              message: res.msg
-            })
-          }
-          this.dialogVisible= false
-        })
-      }
-
+      request.put("/user",this.form).then(res => {
+        if (res.code === "0") {
+          this.$message({
+            type: "success",
+            message: "更新成功"
+          })
+          sessionStorage.setItem("user",JSON.stringify(this.form))
+        } else {
+          this.$message({
+            type: "error",
+            message: res.msg
+          })
+        }
+      })
+      this.inShow = true
     }
   }
 }
@@ -124,8 +141,8 @@ export default {
 .selfImg{
   width: 200px;
   height: 200px;
-  background-color: aquamarine;
   border-radius: 50%;
+  object-fit: cover;
 }
 .selfCard{
   width: 100%;;

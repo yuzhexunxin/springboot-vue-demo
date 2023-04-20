@@ -15,6 +15,11 @@ public class Exh {
     private String exhImg;
     private String exhAge;
     private String exhText;
+    private String floor;
+    private float pam1;
+    private float pam2;
+    private float pam3;
+    private float pam4;
 
 
 

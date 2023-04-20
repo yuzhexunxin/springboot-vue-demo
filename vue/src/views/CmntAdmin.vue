@@ -17,9 +17,11 @@
         <!--      分类-->
         <template #prepend>
           <el-select effect="light" v-model="keyWord" placeholder="分类" style="width: 100px;">
-            <el-option label="评论内容" value="cmntText" />
-            <el-option label="用户id" value="cmntUserid" />
-            <el-option label="展品id" value="cmntExhid" />
+            <el-option label="评论内容" value="text" />
+            <el-option label="用户id" value="userid" />
+            <el-option label="展品id" value="exhid" />
+            <el-option label="展览id" value="zlid" />
+            <el-option label="新闻id" value="newid" />
           </el-select>
         </template>
         <!--      按钮-->
@@ -30,12 +32,14 @@
     </div>
     <!--    主体区域-->
     <el-table :data="tableData" stripe border style="width: 100%">
-      <el-table-column prop="cmntId" label="ID" align="center" sortable/>
-      <el-table-column prop="cmntText" label="评论内容" align="center" />
-      <el-table-column prop="cmntUserid" label="评论用户id" align="center" />
-      <el-table-column prop="cmntExhid" label="评论展品id" align="center" />
-      <el-table-column prop="cmntDate" label="评论时间" align="center" />
-      <el-table-column prop="cmntParentid" label="评论父级id" align="center" />
+      <el-table-column prop="id" label="ID" align="center" sortable/>
+      <el-table-column prop="text" label="评论内容" align="center" />
+      <el-table-column prop="userid" label="评论用户id" align="center" />
+      <el-table-column prop="exhid" label="评论展品id" align="center" />
+      <el-table-column prop="zlid" label="评论展览id" align="center" />
+      <el-table-column prop="newid" label="评论新闻id" align="center" />
+      <el-table-column prop="date" label="评论时间" align="center" />
+      <el-table-column prop="type" label="评论类型" align="center" />
       <el-table-column fixed="right" label="操作" align="center" width="150px" >
         <!--        删除确认提示框-->
         <template #default="scope">
@@ -47,7 +51,7 @@
               :icon="InfoFilled"
               icon-color="#626AEF"
               title="确定删除吗?"
-              @confirm="handleDelete(scope.row.cmntId)"
+              @confirm="handleDelete(scope.row.id)"
           >
 
             <template #reference>
@@ -75,20 +79,27 @@
       <el-dialog v-model="dialogVisible" title="信息" width="30%">
         <el-form :model="form" label-width="120px">
           <el-form-item label="评论内容">
-            <el-input type="textarea" v-model="form.cmntText" style="width: 80%"/>
+            <el-input type="textarea" v-model="form.text" style="width: 80%"/>
           </el-form-item>
           <el-form-item label="评论用户id">
-            <el-input v-model="form.cmntUserid" style="width: 80%"/>
+            <el-input v-model="form.userid" style="width: 80%"/>
           </el-form-item>
           <el-form-item label="评论展品id">
-            <el-input v-model="form.cmntExhid" style="width: 80%"/>
+            <el-input v-model="form.exhid" style="width: 80%"/>
+          </el-form-item>
+          <el-form-item label="评论展览id">
+            <el-input v-model="form.zlid" style="width: 80%"/>
+          </el-form-item>
+          <el-form-item label="评论新闻id">
+            <el-input v-model="form.newid" style="width: 80%"/>
           </el-form-item>
           <el-form-item label="评论时间">
-            <el-date-picker v-model="form.cmntDate" value-format="YYYY-MM-DD" type="date" style="width: 80%" clearable></el-date-picker>
+            <el-date-picker v-model="form.date" value-format="YYYY-MM-DD HH:mm:ss" type="date" style="width: 80%" clearable></el-date-picker>
           </el-form-item>
-          <el-form-item label="评论父级id">
-            <el-input v-model="form.cmntParentid" style="width: 80%"/>
+          <el-form-item label="评论类型">
+            <el-input v-model="form.type" style="width: 80%"/>
           </el-form-item>
+
         </el-form>
         <template #footer>
           <span class="dialog-footer">
@@ -118,7 +129,7 @@ export default {
       pageSize: 10,
       total: 0,
       tableData: [],
-      keyWord: 'cmntText',
+      keyWord: 'text',
     }
   },
   computed: {
@@ -153,7 +164,7 @@ export default {
       this.form = {}
     },
     save() {
-      if(this.form.cmntId){//更新
+      if(this.form.id){//更新
         request.put("/cmnt",this.form).then(res => {
           console.log(res)
           if(res.code === "0") {
@@ -171,6 +182,7 @@ export default {
           this.dialogVisible = false
         })
       } else{
+        console.log(this.form.date)
         request.post("/cmnt",this.form).then(res => {
           console.log(res)
           if(res.code === "0") {
@@ -195,7 +207,7 @@ export default {
     },
     handleDelete(id){
       request.delete("/cmnt/" + id).then(res =>{
-        if(res.code ==- "0") {
+        if(res.code === "0") {
           this.$message({
             type:"success",
             message:"删除成功"

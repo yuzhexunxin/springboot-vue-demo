@@ -64,6 +64,7 @@ export default {
       this.$refs['from'].validate((valid) => {
         console.log("s",this.form)
         if(valid) {
+          this.form.role = 2
           request.post("/user/register", this.form).then(res => {
             if(res.code === "0") {
               this.$message({

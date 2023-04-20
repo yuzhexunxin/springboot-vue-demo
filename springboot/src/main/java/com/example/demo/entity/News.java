@@ -16,6 +16,7 @@ public class News {
     private String content;
     private String author;
     private Date time;
+    private String headimg;
 
 
 

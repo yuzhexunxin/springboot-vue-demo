@@ -11,12 +11,14 @@ import java.util.Date;
 @Data
 public class Cmnt {
     @TableId(type = IdType.AUTO)
-    private  Integer cmntId;
-    private String cmntText;
-    private Integer cmntUserid;
-    private Integer cmntExhid;
-    private Date cmntDate;
-    private Integer cmntParentid;
+    private Integer id;
+    private String type;
+    private String text;
+    private String userid;
+    private String exhid;
+    private String zlid;
+    private String newid;
+    private Date date;
 
 
 

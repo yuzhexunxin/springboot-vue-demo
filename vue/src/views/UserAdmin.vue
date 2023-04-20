@@ -36,6 +36,8 @@
       <el-table-column prop="age" label="年龄" align="center" />
       <el-table-column prop="sex" label="性别" align="center" />
       <el-table-column prop="address" label="地址" align="center" />
+      <el-table-column prop="phone" label="手机号" align="center" />
+      <el-table-column prop="email" label="邮箱" align="center" />
       <el-table-column label="角色" align="center">
         <template #default="scope">
           <span v-if="scope.row.role === 1">管理员</span>
@@ -93,6 +95,9 @@
             <el-radio v-model="form.sex" label="男">男</el-radio>
             <el-radio v-model="form.sex" label="女">女</el-radio>
             <el-radio v-model="form.sex" label="未知">未知</el-radio>
+          </el-form-item>
+          <el-form-item label="角色">
+            <el-input v-model="form.role" style="width: 80%"/>
           </el-form-item>
           <el-form-item label="地址">
             <el-input type="textarea" v-model="form.address" style="width: 80%"/>
